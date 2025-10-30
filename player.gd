@@ -3,10 +3,15 @@ extends CharacterBody2D
 @export var velocidad := 200.0
 @export var cuadro_reposo := 0
 
-@onready var animacion := $AnimatedSprite2D
+@onready var animacion: AnimatedSprite2D = $AnimatedSprite2D
+@onready var area_interact: Area2D = $InteractArea
 
 var objeto_cercano: Node = null
 var mirando_izquierda := false
+
+func _ready():
+	print("Jugador listo. Esperando colisiones...")
+	print("Área de interacción:", area_interact)
 
 func _physics_process(_delta):
 	var entrada := Vector2(
@@ -32,14 +37,34 @@ func _physics_process(_delta):
 		animacion.animation = "walk"
 		animacion.frame = cuadro_reposo
 
-func _input(evento):
+func _input(evento: InputEvent) -> void:
 	if evento.is_action_pressed("ui_accept") and objeto_cercano:
+		print("🟢 Intentando interactuar con:", objeto_cercano.name)
 		objeto_cercano.interactuar()
 
-func _on_InteractArea_body_entered(cuerpo):
-	if cuerpo.has_method("interactuar"):
-		objeto_cercano = cuerpo
+func _on_InteractArea_body_entered(cuerpo: Node) -> void:
+	var objetivo: Node = cuerpo
+	var padre: Node = cuerpo.get_parent()
 
-func _on_InteractArea_body_exited(cuerpo):
-	if objeto_cercano == cuerpo:
+	if not objetivo.has_method("interactuar") and padre != null and padre.has_method("interactuar"):
+		objetivo = padre
+
+	if objetivo.has_method("interactuar"):
+		objeto_cercano = objetivo
+		print("➡ Tocando objeto interactuable:", objetivo.name)
+	else:
+		print("⚠ Entró en contacto con algo sin método interactuar:", cuerpo.name)
+
+func _on_InteractArea_body_exited(cuerpo: Node) -> void:
+	var objetivo: Node = cuerpo
+	var padre: Node = cuerpo.get_parent()
+	var nombre_objeto := ""
+
+	if padre != null and objeto_cercano == padre:
+		nombre_objeto = padre.name
+	elif objeto_cercano == objetivo:
+		nombre_objeto = objetivo.name
+
+	if nombre_objeto != "":
+		print("⬅ Dejaste de tocar:", nombre_objeto)
 		objeto_cercano = null
