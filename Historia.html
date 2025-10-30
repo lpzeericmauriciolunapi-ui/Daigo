@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>La Viuda del Cerro — Descarga</title>
+  <meta name="description" content="Página de descarga visual (no funcional) para ‘La Viuda del Cerro’." />
+  <style>
+    :root{
+      --bg:#0b0b0f;--panel:#12121a;--soft:#1a1a24;--text:#e9e9ef;--muted:#b0b0be;--accent:#9a6bff;--accent-2:#ff3d6e;--ok:#26d07c;--warn:#ffcc66;--shadow:0 10px 40px rgba(0,0,0,.45);
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;height:100%;background:radial-gradient(1200px 600px at 80% -10%,rgba(154,107,255,.08),transparent 60%),radial-gradient(700px 400px at 10% 10%,rgba(255,61,110,.08),transparent 60%),var(--bg);color:var(--text);font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";}
+    a{color:inherit}
+    .container{max-width:1100px;margin:0 auto;padding:28px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .brand .mark{width:38px;height:38px;border-radius:12px;background:conic-gradient(from 210deg, var(--accent), var(--accent-2));box-shadow:0 6px 20px rgba(154,107,255,.35)}
+    .brand h1{font-size:18px;margin:0;letter-spacing:.3px}
+    nav a{opacity:.85;margin-left:16px;text-decoration:none}
+    nav a:hover{opacity:1}
+
+    .hero{display:grid;grid-template-columns:1.1fr .9fr;gap:26px;margin-top:28px}
+    @media (max-width:940px){.hero{grid-template-columns:1fr}}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,.0) 35%),var(--panel);border:1px solid rgba(255,255,255,.06);border-radius:16px;box-shadow:var(--shadow)}
+    .card-inner{padding:24px}
+
+    .title{font-size:38px;line-height:1.1;margin:4px 0 10px}
+    .subtitle{color:var(--muted);margin:0 0 16px}
+
+    .story{line-height:1.75;opacity:.95}
+    .story p{margin:0 0 14px}
+    .story em{opacity:.95}
+
+    .download{position:relative;overflow:hidden}
+    .dl-header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+    .badge{font-size:12px;padding:6px 10px;border-radius:999px;background:rgba(154,107,255,.12);border:1px solid rgba(154,107,255,.35)}
+
+    .dl-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:12px 0}
+    .file{display:flex;align-items:center;gap:12px;background:var(--soft);border:1px dashed rgba(255,255,255,.12);padding:12px 14px;border-radius:12px}
+    .file .icon{width:28px;height:28px;border-radius:6px;background:linear-gradient(135deg,var(--accent),var(--accent-2));}
+    .file .meta{font-size:13px;color:var(--muted)}
+
+    .hash{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-size:12px;color:#cfcfe5;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);padding:10px 12px;border-radius:10px;word-break:break-all}
+
+    .sys{display:flex;gap:10px;flex-wrap:wrap}
+    .pill{padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.02);font-size:12px;color:var(--muted)}
+
+    .cta{display:flex;align-items:center;gap:12px;margin-top:14px}
+    .btn{appearance:none;border:0;outline:0;cursor:not-allowed;display:inline-flex;align-items:center;gap:10px;padding:14px 16px;border-radius:12px;font-weight:600;background:linear-gradient(135deg, rgba(154,107,255,.95), rgba(255,61,110,.95));opacity:.8;box-shadow:0 10px 24px rgba(154,107,255,.35);transition:transform .2s ease, opacity .2s ease}
+    .btn:hover{transform:translateY(-1px);opacity:.9}
+    .btn svg{width:18px;height:18px}
+    .note{font-size:12px;color:var(--muted)}
+
+    /* Fake progress */
+    .progress{height:10px;background:rgba(255,255,255,.06);border-radius:999px;overflow:hidden;border:1px solid rgba(255,255,255,.08);margin-top:10px}
+    .bar{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));animation:load 6s ease-in-out infinite}
+    @keyframes load{0%{width:0}30%{width:18%}60%{width:50%}80%{width:65%}100%{width:0}}
+
+    /* Fog / ambient */
+    .fog{position:absolute;inset:-40px -60px;pointer-events:none;opacity:.18;filter:blur(22px);background:radial-gradient(200px 120px at 20% 30%,#fff,transparent),radial-gradient(260px 160px at 80% 40%,#fff,transparent)}
+
+    /* Modal */
+    .modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;padding:20px;z-index:60}
+    .modal[open]{display:flex}
+    .modal > .dialog{max-width:520px;background:var(--panel);border:1px solid rgba(255,255,255,.08);border-radius:16px;box-shadow:var(--shadow)}
+    .dialog .dialog-inner{padding:20px}
+    .dialog h3{margin:0 0 8px}
+    .dialog p{margin:0 0 14px;color:var(--muted)}
+    .dialog .actions{display:flex;justify-content:flex-end;gap:10px}
+    .ghost{background:transparent;border:1px solid rgba(255,255,255,.15);padding:10px 12px;border-radius:10px;color:var(--text)}
+
+    footer{margin:34px 0 18px;display:flex;justify-content:center;opacity:.75;font-size:12px}
+
+    /* Subtle spooky details */
+    .glow{position:absolute;inset:auto 0  -120px 0;height:180px;background:radial-gradient(60% 140% at 50% 0%, rgba(154,107,255,.18), transparent 60%)}
+    .twinkle{position:absolute;inset:0;pointer-events:none;opacity:.28;background-image:radial-gradient(#fff 1px, transparent 1px);background-size:20px 20px;mask-image:linear-gradient(#000,transparent)}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="mark" aria-hidden="true"></div>
+        <h1>La Viuda del Cerro</h1>
+      </div>
+      <nav aria-label="secciones">
+        <a href="#historia">Historia</a>
+        <a href="#descarga">Descarga</a>
+        <a href="#requisitos">Requisitos</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <article class="card">
+        <div class="card-inner">
+          <p class="badge">Relato interactivo (concepto visual)</p>
+          <h2 class="title">Dicen que el Cerro guarda almas…</h2>
+          <p class="subtitle">Una atmósfera minera, un susurro en la oscuridad y un archivo que jamás comienza a descargarse.</p>
+          <div class="story" id="historia">
+            <p><em>“La Viuda del Cerro”</em></p>
+            <p>Dicen que el Cerro guarda almas. Que bajo la roca, el aire tiene memoria.<br>Evaristo, un minero de Potosí, baja solo al turno de noche.</p>
+            <p>El yacimiento está casi agotado, y la empresa promete un bono a quien logre encontrar una nueva veta.<br>Necesita el dinero. Su hijo está enfermo. Por eso decide entrar sin compañía, ni coca, ni cigarro, ni alcohol para el Tío.<br>Evaristo cree más en la necesidad que en los mitos.</p>
+            <p>Al principio, todo parece normal. El golpe del combo, el polvo, el silencio.<br>Hasta que escucha una voz femenina, suave y lejana, que susurra su nombre.<br>No es eco. Es un llamado.<br>Intrigado —o quizá embrujado— la sigue.</p>
+            <p>Cada paso lo lleva más abajo, a túneles que nunca vio.<br>La linterna parpadea.<br>El aire se espesa.<br>Las sombras parecen moverse al ritmo de una respiración ajena.</p>
+            <p>Entonces, la ve: la Viuda, una figura de luto, pálida, con ojos que brillan en la oscuridad.<br>Dicen que fue la esposa de un minero que ofendió al Tío, y ahora reclama las almas de quienes olvidan ofrendar.<br>Evaristo intenta huir, pero los pasadizos cambian. La mina ya no obedece a la lógica de la tierra, sino a la voluntad del espíritu.</p>
+          </div>
+        </div>
+        <div class="glow" aria-hidden="true"></div>
+        <div class="twinkle" aria-hidden="true"></div>
+      </article>
+
+      <aside class="card download" id="descarga" aria-labelledby="descarga-title">
+        <div class="fog" aria-hidden="true"></div>
+        <div class="card-inner">
+          <div class="dl-header">
+            <h3 id="descarga-title" style="margin:0">Descarga (no funcional)</h3>
+            <span class="badge" title="Esta sección es sólo visual">Solo visual</span>
+          </div>
+
+          <div class="file" aria-label="archivo de instalación simulado">
+            <div class="icon" aria-hidden="true"></div>
+            <div>
+              <div style="font-weight:600">La_Viuda_del_Cerro_Setup.exe</div>
+              <div class="meta">Versión 0.9.0 · 127 MB · Windows</div>
+            </div>
+          </div>
+
+          <div class="dl-row">
+            <span class="pill">Firma: sin validar</span>
+            <span class="pill">Estado: en espera</span>
+            <span class="pill">Servidor: Mina-03</span>
+          </div>
+
+          <div class="hash" aria-live="polite">
+            SHA-256: 7f2b0a…c1 (simulado)
+          </div>
+
+          <div class="cta">
+            <button class="btn" id="downloadBtn" aria-disabled="true" disabled>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Descargar .exe
+            </button>
+            <span class="note">La descarga está deshabilitada intencionalmente.</span>
+          </div>
+
+          <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="progreso ficticio">
+            <div class="bar"></div>
+          </div>
+
+          <div style="margin-top:14px" id="requisitos">
+            <div class="dl-row sys">
+              <span class="pill">Windows 10/11 (x64)</span>
+              <span class="pill">RAM 4 GB</span>
+              <span class="pill">Espacio 500 MB</span>
+              <span class="pill">GPU opcional</span>
+            </div>
+          </div>
+
+          <label style="display:flex;align-items:center;gap:10px;margin-top:12px;font-size:13px;color:var(--muted)">
+            <input type="checkbox" disabled checked /> Acepto los términos (ficticios)
+          </label>
+        </div>
+      </aside>
+    </section>
+
+    <footer>
+      © <span id="y"></span> Proyecto conceptual. Esta página es una maqueta visual; no descarga nada.
+    </footer>
+  </div>
+
+  <!-- Modal de aviso -->
+  <dialog class="modal" id="modal">
+    <div class="dialog">
+      <div class="dialog-inner">
+        <h3>Descarga deshabilitada</h3>
+        <p>Esta es una página de demostración. El botón no inicia ninguna descarga real.</p>
+        <div class="actions">
+          <button class="ghost" id="closeModal">Entendido</button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <script>
+    (function(){
+      const y = document.getElementById('y');
+      y.textContent = new Date().getFullYear();
+      const btn = document.getElementById('downloadBtn');
+      const modal = document.getElementById('modal');
+      const closeModal = document.getElementById('closeModal');
+
+      // Asegura que no haya navegación ni descarga, sólo aviso visual
+      function openInfo(e){
+        if(e) e.preventDefault();
+        if (typeof modal.showModal === 'function') { modal.showModal(); }
+        else { modal.setAttribute('open',''); }
+      }
+      btn.addEventListener('click', openInfo);
+      btn.addEventListener('keydown', function(e){ if(e.key==='Enter' || e.key===' '){ openInfo(e); }});
+      closeModal.addEventListener('click', ()=>{
+        if (typeof modal.close === 'function') { modal.close(); }
+        else { modal.removeAttribute('open'); }
+      });
+    })();
+  </script>
+</body>
+</html>
