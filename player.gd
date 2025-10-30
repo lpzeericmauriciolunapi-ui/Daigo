@@ -5,14 +5,15 @@ extends CharacterBody2D
 
 @onready var animacion: AnimatedSprite2D = $AnimatedSprite2D
 @onready var area_interact: Area2D = $InteractArea
+@onready var hint: Label = $"../UI/Label"  # El label para mostrar el mensaje
 
-var objeto_cercano: Node = null
+var objeto_cercano: Area2D = null
 var mirando_izquierda := false
 
 func _ready():
 	print("Jugador listo. Esperando colisiones...")
-	print("Área de interacción:", area_interact)
 
+# Movimiento del jugador
 func _physics_process(_delta):
 	var entrada := Vector2(
 		Input.get_action_strength("ui_right") - Input.get_action_strength("ui_left"),
@@ -22,6 +23,7 @@ func _physics_process(_delta):
 	velocity = entrada.normalized() * velocidad
 	move_and_slide()
 
+	# Control de animaciones
 	if abs(entrada.x) > 0.01:
 		animacion.flip_h = entrada.x > 0
 		mirando_izquierda = animacion.flip_h
@@ -37,34 +39,27 @@ func _physics_process(_delta):
 		animacion.animation = "walk"
 		animacion.frame = cuadro_reposo
 
+	# Mostrar el texto de interacción si hay un objeto cercano
+	if objeto_cercano != null:
+		hint.text = "Presiona Enter para interactuar"
+	else:
+		hint.text = ""
+
+# Detectar la entrada de un botón para interactuar
 func _input(evento: InputEvent) -> void:
 	if evento.is_action_pressed("ui_accept") and objeto_cercano:
 		print("🟢 Intentando interactuar con:", objeto_cercano.name)
-		objeto_cercano.interactuar()
+		if objeto_cercano.has_method("interactuar"):
+			objeto_cercano.interactuar()
 
-func _on_InteractArea_body_entered(cuerpo: Node) -> void:
-	var objetivo: Node = cuerpo
-	var padre: Node = cuerpo.get_parent()
+# Detectar cuando entra en rango de un objeto interactuable
+func _on_interact_area_area_entered(area: Area2D) -> void:
+	if area.is_in_group("inter"):
+		objeto_cercano = area
+		print("➡ Tocando objeto interactuable:", area.name)
 
-	if not objetivo.has_method("interactuar") and padre != null and padre.has_method("interactuar"):
-		objetivo = padre
-
-	if objetivo.has_method("interactuar"):
-		objeto_cercano = objetivo
-		print("➡ Tocando objeto interactuable:", objetivo.name)
-	else:
-		print("⚠ Entró en contacto con algo sin método interactuar:", cuerpo.name)
-
-func _on_InteractArea_body_exited(cuerpo: Node) -> void:
-	var objetivo: Node = cuerpo
-	var padre: Node = cuerpo.get_parent()
-	var nombre_objeto := ""
-
-	if padre != null and objeto_cercano == padre:
-		nombre_objeto = padre.name
-	elif objeto_cercano == objetivo:
-		nombre_objeto = objetivo.name
-
-	if nombre_objeto != "":
-		print("⬅ Dejaste de tocar:", nombre_objeto)
+# Detectar cuando sale del rango del objeto interactuable
+func _on_interact_area_area_exited(area: Area2D) -> void:
+	if area.is_in_group("inter"):
+		print("⬅ Dejaste de tocar:", area.name)
 		objeto_cercano = null
